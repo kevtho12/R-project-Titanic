@@ -1,0 +1,110 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Today I will be finding insights on why certain passengers on the Titanic were transported.
+
+```{r}
+library(dplyr)
+library(tibble)
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r}
+titanic <- read_csv("C:\\Users\\kevth\\OneDrive\\Documents\\R\\train.csv")
+View(titanic)
+
+```
+
+```{r}
+transport_by_home<-titanic %>% count(HomePlanet,Transported,sort = TRUE)
+transport_by_home
+```
+
+I first wanted to see which Home Planets you were most likely to be transported and it shows that Earth and Europa were two Home Planets passengers were being transported.
+
+```{r}
+age_transport<-titanic%>%
+  group_by(Transported)%>%
+  summarise(mean = mean(Age, na.rm =TRUE))
+
+age_transport
+```
+
+I wanted to see the average age of passengers being transported vs not transported, there was no significance to the data as the average age was only separated by 2 years.
+
+```{r}
+transport_by_sleep<-titanic%>% count(CryoSleep,Transported,sort = TRUE)
+transport_by_sleep
+```
+
+I checked if being in the Cryosleep caused passengers to be transported as if you were you were most likely to be transported. But if you weren't in the Cyrosleep, you were most likely not to be transported.
+
+```{r}
+transport_by_destination<-titanic %>% count(Destination,Transported,sort = TRUE)
+transport_by_destination
+```
+
+This table shows that most passengers traveling to TRAPPIST-1e and 55 Cancri e were most likely to transported.
+
+```{r}
+spent_by_transported<-titanic%>%
+  group_by(Transported)%>%
+  summarise(total_spent = sum(RoomService,FoodCourt,ShoppingMall,Spa,VRDeck,na.rm = TRUE))
+            
+spent_by_transported
+```
+
+This data show that passengers that didn't transport spent significantly more than passengers that did.
+
+```{r}
+
+```
+
+```{r}
+info_by_transported<-titanic%>%
+  group_by(HomePlanet,Destination,CryoSleep,VIP)%>%
+  summarise(count_transported = sum(Transported,na.rm = FALSE))
+            
+View(info_by_transported)
+  
+
+```
+
+I created a table that shows which type of passenger was the most common when transported. Based on my finding, A passenger from Earth, travelling to TRAPPIST-1e who was not a VIP and didn't use the Cyrosleep was most likely to be transported.
+
+```{r}
+
+ggplot(data=transport_by_home,aes(x=HomePlanet,y=n,fill=Transported))+
+  geom_bar(stat = 'identity', position=position_dodge())
+
+
+
+```
+
+This double stacked bar graph indicates more passengers from Earth were not transported while passengers from Europa were more likely to be transported. Passengers from Mars were almost split evenly when being transported.
+
+```{r}
+
+
+```
+
+```{r}
+ggplot(data= info_by_transported,aes(x=count_transported, y=VIP)) +
+  geom_col(fill='Blue') 
+```
+
+This bar graph indicates that most people who were not in VIP were transported.
+
+```{r}
+
+```
+
+```{r}
+
+
+```
+
+Based on my analysis, I can make the conclusion that passengers that end it up being transported were people that didn't spend money and weren't part of VIP. Passengers that didn't get transported were people who were part of VIP and weren't using the Cyrosleep. These passengers enjoyed their time on the Titanic and therefore weren't transported.
